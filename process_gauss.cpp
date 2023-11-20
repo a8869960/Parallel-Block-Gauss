@@ -18,6 +18,9 @@ void *process_gauss(void *arg_)
     l = n - k * m; //how long last block
     bl = (l != 0) ? k + 1 : k; //number of all blocks
 
+    double start_CPU, start_FULL, end_CPU, end_FULL;
+    start_CPU = get_CPU_time();
+    start_FULL = get_full_time();
     //Прямой ход
     for(step = 0; step < k; step++)
     {
@@ -33,6 +36,10 @@ void *process_gauss(void *arg_)
         {
             cout << "Can't find main block element on step " << step << endl;
             arg->status = io_status::no_matrix_main;
+            end_CPU = get_CPU_time();
+            end_FULL = get_full_time();
+            arg->cpu_time = end_CPU - start_CPU;
+            arg->full_time = end_FULL - start_FULL;
             return 0;
         }
 
@@ -107,17 +114,26 @@ void *process_gauss(void *arg_)
         {
             cout << "Can't find block max." << endl;
             arg->status = io_status::no_matrix_main;
-            return 0;
+        } else
+        {
+            E(block, l);
+            put_block(a, block, indi[k], indj[k], n, m, k, l);
+
+            get_block_b(b, block, indi[k], m, k, l);
+            matrix_product(block_inv, block, block_h, l, l, 1);
+            put_block_b(b, block_h, indi[k], m, k, l);
         }
-
-        E(block, l);
-        put_block(a, block, indi[k], indj[k], n, m, k, l);
-
-        get_block_b(b, block, indi[k], m, k, l);
-        matrix_product(block_inv, block, block_h, l, l, 1);
-        put_block_b(b, block_h, indi[k], m, k, l);
     }
     reduce_sum(p);
+
+    if((arg - arg->g)->status == io_status::no_matrix_main)
+    {
+        end_CPU = get_CPU_time();
+        end_FULL = get_full_time();
+        arg->cpu_time = end_CPU - start_CPU;
+        arg->full_time = end_FULL - start_FULL;
+        return 0;
+    }
 
     //Обратный ход
     if(bl == k + 1)
@@ -150,6 +166,9 @@ void *process_gauss(void *arg_)
     }
     reduce_sum(p);
 
+    end_CPU = get_CPU_time();
+    end_FULL = get_full_time();
+
     if(g == 0)
     {
         for (int i = 0; i < k; i++)
@@ -158,7 +177,10 @@ void *process_gauss(void *arg_)
         for (int j = 0; j < l; j++)
             arg->x[m * k + j] = b[indi[k] * m + j];
     }
+
     arg->status = io_status::success;
+    arg->cpu_time = end_CPU - start_CPU;
+    arg->full_time = end_FULL - start_FULL;
 
     return nullptr;
 }

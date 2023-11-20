@@ -4,6 +4,13 @@
 #include <iostream>
 #include <cstring>
 #include <pthread.h>
+#include <ctime>
+
+#include <cstdio>
+#include <cstdlib>
+#include <sys/sysinfo.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 using namespace std;
 
@@ -41,6 +48,9 @@ public:
     int local_jmax = 0;
     int global_imax = 0;
     int global_jmax = 0;
+
+    double cpu_time = 0;
+    double full_time = 0;
     
     ~ARGS()
     {
@@ -49,6 +59,28 @@ public:
         delete[] block;
         delete[] block_h;
         delete[] block_inv;
+    }
+
+    void print()
+    {
+        cout << "m      | " << g << endl;
+        cout << "cpu    | " << cpu_time << endl;
+        cout << "full   | " << full_time << endl;
+        cout << "status | ";
+        switch (status)
+        {
+            case(io_status::success):
+                cout << "success" << endl;
+                break;
+
+            case(io_status::no_matrix_main):
+                cout << "no_matrix_main" << endl;
+                break;
+
+            case(io_status::none):
+                cout << "none" << endl;
+                break;
+        }
     }
 };
 
@@ -109,3 +141,7 @@ void get_block_b( double *B, double *block, int i, int m, int k, int l);
 void put_block_b( double *B, double *block, int i, int m, int k, int l);
 
 void reduce_sum(int p, double* a = nullptr, int n = 0);
+
+double get_full_time();
+double get_CPU_time();
+

@@ -239,3 +239,17 @@ void reduce_sum(int p, double* a, int n)
 
     pthread_mutex_unlock(&m);
 }
+
+double get_full_time()
+{
+    struct timeval buf;
+    gettimeofday(&buf, NULL);
+    return buf.tv_sec + buf.tv_usec / 1.e6;
+}
+
+double get_CPU_time()
+{
+    struct rusage buf;
+    getrusage(RUSAGE_THREAD, &buf);
+    return buf.ru_utime.tv_sec + buf.ru_utime.tv_usec / 1.e6;
+}

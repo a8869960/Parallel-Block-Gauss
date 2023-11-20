@@ -1,8 +1,6 @@
 //
 // Created by varsem on 15.11.23.
 //
-#include <ctime>
-
 #include "functions.h"
 
 int main(int ac, char* av[])
@@ -152,12 +150,14 @@ int main(int ac, char* av[])
             if(pthread_join(threads[i], 0))
                 cout << "Cannot wait thread " << i << endl;
         }
-        double t1 = (clock() - start_time) / CLOCKS_PER_SEC;
 
 //        cout << "MATRIX A:" << endl;
 //        matrixOutput(args[0].a, n, n, n);
 //        cout << "MATRIX B:" << endl;
 //        matrixOutput(args[0].b, 1, n, n);
+
+//        for(int i = 0; i < p; i++)
+//            args[i].print();
 
         int count = 0;
         for(int i = 0; i < p; i++)
@@ -175,6 +175,7 @@ int main(int ac, char* av[])
         }
 
         //Запись результата
+        double t1 = args[0].full_time;
         start_time = clock();
         double r1 = 0, r2 = 0;
         if(flag)
