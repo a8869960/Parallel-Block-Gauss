@@ -163,8 +163,8 @@ void *process_gauss(void *arg_)
             matrixSubtraction(block_h, block_inv, block_h, 1, m); //
             put_block_b(b, block_h, indi[i], m, k, l);
         }
+        reduce_sum(p);
     }
-    reduce_sum(p);
 
     end_CPU = get_CPU_time();
     end_FULL = get_full_time();
