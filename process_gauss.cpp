@@ -8,7 +8,7 @@ void *process_gauss(void *arg_)
     ARGS *arg = (ARGS*)arg_;
     int g = arg->g, n = arg->n, m = arg->m, p = arg->p;
 
-   int k, l, bl, step;
+   int k, l, bl, step, t;
    double norm = matrixNorm(arg->A, n);
 
    double *a = arg->a, *b = arg->b, *block = arg->block, *block_h = arg->block_h, *block_inv = arg->block_inv;
@@ -17,10 +17,12 @@ void *process_gauss(void *arg_)
     k = n / m; //how many blocks m*m
     l = n - k * m; //how long last block
     bl = (l != 0) ? k + 1 : k; //number of all blocks
+    t = bl % p;
 
     double start_CPU, start_FULL, end_CPU, end_FULL;
     start_CPU = get_CPU_time();
     start_FULL = get_full_time();
+
     //Прямой ход
     for(step = 0; step < k; step++)
     {
@@ -32,7 +34,7 @@ void *process_gauss(void *arg_)
         reduce_sum(p);
 
         //Ищем "самый" главный
-        if(find_global_block_main(arg, k, l, norm) == -1)
+        if(g == 0 and find_global_block_main(arg, k, l, norm) == -1)
         {
             cout << "Can't find main block element on step " << step << endl;
             arg->status = io_status::no_matrix_main;
@@ -60,6 +62,14 @@ void *process_gauss(void *arg_)
             matrix_product(block_inv, block, block_h, m, m, size_l);
             put_block(a, block_h, indi[step], indj[j], n, m, k, l);
         }
+
+        if(g == t)
+        {
+            //Делим присоединенный столбец
+            get_block_b(arg->b, block, indi[step], m, k, l);
+            matrix_product(block_inv, block, block_h, m, m, 1);
+            put_block_b(arg->b, block_h, indi[step], m, k, l);
+        }
         reduce_sum(p);
 
         if(g == 0)
@@ -67,11 +77,6 @@ void *process_gauss(void *arg_)
             //Делаем главный элемент единичкой
             E(block, m);
             put_block(a, block, indi[step], indj[step], n, m, k, l);
-
-            //Делим присоединенный столбец
-            get_block_b(arg->b, block, indi[step], m, k, l);
-            matrix_product(block_inv, block, block_h, m, m, 1);
-            put_block_b(arg->b, block_h, indi[step], m, k, l);
         }
         reduce_sum(p);
 
@@ -107,7 +112,7 @@ void *process_gauss(void *arg_)
     }
 
     //Делим последний блок
-    if(bl == k + 1 and g == 0)
+    if(bl == k + 1 and g == t)
     {
         get_block(a, block, indi[k], indj[k], n, m, k, l);
         if(inverseMatrix(block, block_inv, block_h, l, indi_m, indj_m, norm) == -1)
