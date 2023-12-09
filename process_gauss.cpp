@@ -63,7 +63,7 @@ void *process_gauss(void *arg_)
             put_block(a, block_h, indi[step], indj[j], n, m, k, l);
         }
 
-        if(g == t)
+         if(g == t)
         {
             //Делим присоединенный столбец
             get_block_b(arg->b, block, indi[step], m, k, l);
@@ -72,47 +72,50 @@ void *process_gauss(void *arg_)
         }
         reduce_sum(p);
 
-        if(g == 0)
-        {
-            //Делаем главный элемент единичкой
-            E(block, m);
-            put_block(a, block, indi[step], indj[step], n, m, k, l);
-        }
-        reduce_sum(p);
+         if(g == 0)
+         {
+             //Делаем главный элемент единичкой
+             E(block, m);
+             put_block(a, block, indi[step], indj[step], n, m, k, l);
+         }
 
         //Зануление столбца
-        for(int i = step + g + 1; i < bl; i += p)
+        for(int j = step + 1; j < bl; j++)
         {
-            get_block(a, block, indi[i], indj[step], n, m, k ,l); // size = size_m * m
+            get_block(a, block_h, indi[step], indj[j], n, m, k, l);
 
-            //Зануляем А
-            for(int j = step + 1; j < bl; j++)
+            //Вычисляем столбцы A
+            for(int i = step + g + 1; i < bl; i += p)
             {
                 int size_m = (i != k ? m : l);
                 int size_l = (j != k ? m : l);
 
-                get_block(a, block_h, indi[step], indj[j], n, m, k, l); //size = m * size_l
+                get_block(a, block, indi[i], indj[step], n, m, k, l); //size = m * size_l
                 matrix_product(block, block_h, block_inv, size_m, m, size_l);
                 get_block(a, block_h, indi[i], indj[j], n, m, k, l);
                 matrixSubtraction(block_h, block_inv, block_h, size_m, size_l);
                 put_block(a, block_h, indi[i], indj[j], n, m, k, l);
+
+                //Вычисляем столбцы В
+                if(j == step + 1)
+                {
+                    get_block_b(b, block_h, indi[step], m, k, l);
+                    matrix_product(block, block_h, block_inv, m, m, 1);
+                    get_block_b(b, block_h, indi[i], m, k, l);
+                    matrixSubtraction(block_h, block_inv, block_h, 1, m);
+                    put_block_b(b, block_h, indi[i], m, k, l);
+                }
             }
-            //Зануляем В
-            get_block_b(b, block_h, indi[step], m, k, l);
-            matrix_product(block, block_h, block_inv, m, m, 1);
-            get_block_b(b, block_h, indi[i], m, k, l);
-            matrixSubtraction(block_h, block_inv, block_h, 1, m);
-            put_block_b(b, block_h, indi[i], m, k, l);
         }
 
         memset(block, 0, sizeof(double) * m * m);
         for(int i = step + g + 1; i < bl; i += p)
             put_block(a, block, indi[i], indj[step], n, m, k, l);
-//        reduce_sum(p);
     }
+    reduce_sum(p);
 
     //Делим последний блок
-    if(bl == k + 1 and g == t)
+    if(bl == k + 1 and g == 0)
     {
         get_block(a, block, indi[k], indj[k], n, m, k, l);
         if(inverseMatrix(block, block_inv, block_h, l, indi_m, indj_m, norm) == -1)
