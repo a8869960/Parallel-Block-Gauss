@@ -21,14 +21,8 @@ int calc_r1(double* A, double* x, double* B, int n, double* helper, double *r1)
 
     matrix_product(A, x, helper, n, n, 1);
 
-//    cout << "Ax" << endl;
-//    matrixOutput(helper, 1, n, 7);
-//    cout << endl;
-
     if(matrixSubtraction(helper,B, helper, n, 1) == -1)
         return -1;
-
-//    matrixOutput(helper, 1, n, n);
 
     double help = norm1(B, n);
 

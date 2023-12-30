@@ -145,3 +145,33 @@ void reduce_sum(int p, double* a = nullptr, int n = 0);
 double get_full_time();
 double get_CPU_time();
 
+//gauss_func.cpp
+int gauss_func(int n,
+               int m,
+               double *A,
+               double *B,
+               double *x,
+               int *indi_m,
+               int *indj_m,
+               int *indi,
+               int *indj,
+               double *a,
+               double *b,
+               double *block,
+               double *block_inv,
+               double *block_h);
+int matrixMax(double *A,
+              int step,
+              int n,
+              int m,
+              int k,
+              int l,
+              int *indi,
+              int *indj,
+              int *indi_m,
+              int *indj_m,
+              double* block,
+              double *block_inv,
+              double *block_h,
+              double NORM);
+

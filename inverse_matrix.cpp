@@ -11,19 +11,11 @@ int matrixMax(double *A, int k, int n, int *indi, int *indj, double norm);
 
 int inverseMatrix(double *a, double *A, double *B, int n, int *indi, int *indj, double norm)
 {
-//     double norm = matrixNorm(a, n);
-//     if(norm < eps) return -1;
-
-//    cout << "JJKJK " << eps * norm << "IHBIH " << norm << endl;
-
     if(n == 1)
     {
-//        cout << "IUBHIBHIBIBHJJBI" << endl;
         if(abs(a[0]) < 1e-15 * norm)
-        {
-//            cout << "Матрица вырождена. " << a[0] << endl;
             return -1;
-        }
+
         A[0] = 1. / a[0];
         return 0;
     }
@@ -38,9 +30,6 @@ int inverseMatrix(double *a, double *A, double *B, int n, int *indi, int *indj, 
 
     memcpy(A, a, sizeof(double) * n * n);
 
-//    cout << "--------Ah---" << endl;
-//    matrixOutput(A, n, n, n);
-
     for(i = 0; i < n; i++)
         for(j = 0; j < n; j++)
         {
@@ -54,13 +43,9 @@ int inverseMatrix(double *a, double *A, double *B, int n, int *indi, int *indj, 
     for(i = 0; i < n; i++)
     {
         if(matrixMax(A, i, n, indi, indj, norm) == -1)
-        {
-//            cout << i << endl;
             return -1;
-        }
 
         double Aii = A[indi[i] * n + indj[i]];
-//        cout << "A" << i << " " << Aii << endl;
 
         for(j = 0; j < i + 1; j++)
             B[indi[i] * n + indj[j]] = B[indi[i] * n + indj[j]] / Aii;
@@ -71,11 +56,6 @@ int inverseMatrix(double *a, double *A, double *B, int n, int *indi, int *indj, 
         }
         A[indi[i] * n + indj[i]] = 1;
 
-//        cout << "--------A/---" << endl;
-//        matrixOutput(A, n, n, n);
-//        cout << "--------B/---" << endl;
-//        matrixOutput(B, n, n, n);
-
         for(ii = i + 1; ii < n; ii++)
         {
             for(j = 0; j < i + 1; j++)
@@ -85,18 +65,9 @@ int inverseMatrix(double *a, double *A, double *B, int n, int *indi, int *indj, 
                 A[indi[ii] * n + indj[j]] = A[indi[ii] * n + indj[j]] - A[indi[i] * n + indj[j]] * A[indi[ii] * n + indj[i]];
                 B[indi[ii] * n + indj[j]] = B[indi[ii] * n + indj[j]] - B[indi[i] * n + indj[j]] * A[indi[ii] * n + indj[i]];
             }
-//            B[indi[ii] * n + indj[i]] = B[indi[ii] * n + indj[i]] - B[indi[i] * n + indj[i]] * A[indi[ii] * n + indj[i]];
             A[indi[ii] * n + indj[i]] = 0;
         }
-//        cout << "--------A0---" << endl;
-//        matrixOutput(A, n, n, n);
-//        cout << "--------B0---" << endl;
-//        matrixOutput(B, n, n, n);
     }
-//    cout << "Pr hod A" << endl;
-//    matrixOutput(A, n, n, n);
-//    cout << "Pr hod B" << endl;
-//    matrixOutput(B, n, n, n);
 
     //Обратный ход
     for(i = n - 1; i >= 0; i--)
@@ -113,12 +84,6 @@ int inverseMatrix(double *a, double *A, double *B, int n, int *indi, int *indj, 
         }
     }
 
-//    cout << "Ob hod B" << endl;
-//    matrixOutput(B, n, n, n);
-//
-//    cout << "Ob hod A" << endl;
-//    matrixOutput(A, n, n, n);
-
     for(i = 0; i < n; i++)
         indi[i] = i;
 
@@ -133,21 +98,9 @@ int inverseMatrix(double *a, double *A, double *B, int n, int *indi, int *indj, 
             }
         }
 
-//    for(i = 0; i < n; i++)
-//        cout << indi[i] << " ";
-//    cout << endl;
-
     for(i = 0; i < n; i++)
         for(j = 0; j < n; j++)
             A[i * n + j] = B[indi[i] * n + j];
-
-//    cout << "InvM" << endl;
-//    matrixOutput(A, n, n, n);
-//    cout << endl;
-//
-//    cout << "Matrix product" << endl;
-//    matrix_product(a, A, B, n, n, n);
-//    matrixOutput(B, n, n, 5);
 
     return 0;
 }
@@ -168,16 +121,8 @@ int matrixMax(double *A, int k, int n, int *indi, int *indj, double norm)
             }
         }
 
-//    cout << "A in MAM" << endl;
-//    matrixOutput(A, n, n, 12);
-//
-//    cout << "MAX " << imax << " " << jmax << " : " << A[indi[imax] * n + indj[jmax]] << endl;
-
     if(abs(A[indi[imax] * n + indj[jmax]]) < eps * norm)
-    {
-//        cout << "A " << A[indi[imax] * n + indj[jmax]] << endl;
         return -1;
-    }
 
     int helper;
 

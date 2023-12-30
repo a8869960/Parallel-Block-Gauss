@@ -151,14 +151,6 @@ int main(int ac, char* av[])
                 cout << "Cannot wait thread " << i << endl;
         }
 
-//        cout << "MATRIX A:" << endl;
-//        matrixOutput(args[0].a, n, n, n);
-//        cout << "MATRIX B:" << endl;
-//        matrixOutput(args[0].b, 1, n, n);
-
-//        for(int i = 0; i < p; i++)
-//            args[i].print();
-
         int count = 0;
         for(int i = 0; i < p; i++)
             if(args[i].status != io_status::success)
